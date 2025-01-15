@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import streamlit as st
 
 def generate_summary(df: pd.DataFrame) -> dict:
     """Generate summary statistics for the dataset."""
@@ -14,6 +15,8 @@ def plot_distributions(df: pd.DataFrame):
     """Plot data distributions for numerical features."""
     numeric_cols = df.select_dtypes(include=["float", "int"]).columns
     for col in numeric_cols:
+        plt.figure(figsize=(8, 5))
         sns.histplot(df[col], kde=True)
         plt.title(f"Distribution of {col}")
-        plt.show()
+        st.pyplot(plt)
+        plt.close()
