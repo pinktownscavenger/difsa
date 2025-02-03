@@ -33,14 +33,24 @@ if uploaded_file is not None:
         st.write(f"Duplicates: {validation_results['duplicates']}")
 
         # Summary statistics
-        st.subheader("Dataset Summary")
+        # st.subheader("Dataset Summary")
         summary = generate_summary(df)
-        st.json(summary["basic_stats"])
+
+        # Show binary columns separately
+        st.subheader("Binary 1/0 Columns")
+        if summary["binary_columns"]:
+            st.write(", ".join(summary["binary_columns"]))
+        else:
+            st.write("No binary columns detected.")
+
+        # Show the summary stats in a table format
+        st.subheader("Dataset Summary")
+        st.dataframe(pd.DataFrame(summary["summary_stats"]))
 
         # Visualizations
-        st.subheader("Data Visualizations")
-        st.write("Numeric feature distributions:")
-        plot_distributions(df)
+        # st.subheader("Data Visualizations")
+        # st.write("Numeric feature distributions:")
+        # plot_distributions(df)
     
     except Exception as e:
         st.error(f"Error loading dataset: {e}")
