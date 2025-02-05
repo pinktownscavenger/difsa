@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from ingestion import validate_data
 from exploration import generate_summary, plot_distributions
-
 st.title("DIFSA: Data Insight and Feature Selection Assistant")
 
 # File uploader
@@ -33,15 +32,20 @@ if uploaded_file is not None:
         st.write(f"Duplicates: {validation_results['duplicates']}")
 
         # Summary statistics
-        # st.subheader("Dataset Summary")
         summary = generate_summary(df)
 
         # Show binary columns separately
-        st.subheader("Binary 1/0 Columns")
-        if summary["binary_columns"]:
-            st.write(", ".join(summary["binary_columns"]))
+        st.subheader("Boolean Columns")
+        if summary["boolean_columns"]:
+            st.dataframe(pd.DataFrame(summary["boolean_columns"]).T)
         else:
-            st.write("No binary columns detected.")
+            st.write("No boolean columns detected.")
+
+        st.subheader("Sequential Columns")
+        if summary["sequential_columns"]:
+            st.dataframe(pd.DataFrame(summary["sequential_columns"]).T)
+        else:
+            st.write("No sequential columns detected.")
 
         # Show the summary stats in a table format
         st.subheader("Dataset Summary")
