@@ -35,11 +35,11 @@ def filter_df(df, sequential_columns, boolean_columns):
     summary_columns = [col for col in df.columns if col not in sequential_cols + boolean_cols]
     return summary_columns
 
-def format_and_addi_stats(df,summary_columns):
-    if not summary_columns:
+def format_and_addi_stats(df,filtered_columns):
+    if not filtered_columns:
         return "No valid numeric columns for summary statistics."
     
-    numeric_columns = df[summary_columns].select_dtypes(include=[np.number]).columns
+    numeric_columns = df[filtered_columns].select_dtypes(include=[np.number]).columns
 
     if numeric_columns.empty:
         return "No numeric columns available after filtering."
@@ -62,8 +62,8 @@ def generate_summary(df: pd.DataFrame) -> dict:
     boolean_columns = extract_boolean_columns(df)
     sequential_columns = extract_sequential_columns(df)
 
-    summary_columns = filter_df(df,sequential_columns,boolean_columns)
-    summary_stats = format_and_addi_stats(df,summary_columns)
+    filtered_columns = filter_df(df,sequential_columns,boolean_columns)
+    summary_stats = format_and_addi_stats(df,filtered_columns)
 
     return {
         "boolean_columns": boolean_columns,
@@ -73,8 +73,22 @@ def generate_summary(df: pd.DataFrame) -> dict:
 
 def plot_distributions(df: pd.DataFrame):
     """Plot data distributions for numerical features."""
-    numeric_cols = df.select_dtypes(include=["float", "int"]).columns
-    for col in numeric_cols:
+    summary_columns = filter_df(df, extract_boolean_columns(df), extract_sequential_columns(df))
+    numeric_cols = df[summary_columns].select_dtypes(include=["float", "int"]).columns
+
+    sns.set_theme(style="darkgrid", palette="muted")
+    plt.rcParams.update({
+        "axes.facecolor": "#212121",  # Dark background for the axes
+        "figure.facecolor": "#212121",  # Dark background for the figure
+        "grid.color": "#2d2d2d",  # White gridlines for contrast
+        "axes.labelcolor": "white",  # White color for axis labels
+        "xtick.color": "white",  # White color for x-axis ticks
+        "ytick.color": "white"  # White color for y-axis ticks
+    })
+
+    selected_columns = st.multiselect("Select columns to plot", options=numeric_cols, default=None)
+
+    for col in selected_columns:
         plt.figure(figsize=(8, 5))
         sns.histplot(df[col], kde=True)
         plt.title(f"Distribution of {col}")

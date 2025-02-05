@@ -52,9 +52,8 @@ if uploaded_file is not None:
         st.dataframe(pd.DataFrame(summary["summary_stats"]))
 
         # Visualizations
-        # st.subheader("Data Visualizations")
-        # st.write("Numeric feature distributions:")
-        # plot_distributions(df)
+        st.subheader("Data Visualizations")
+        plot_distributions(df)
     
     except Exception as e:
         st.error(f"Error loading dataset: {e}")
